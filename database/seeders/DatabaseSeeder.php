@@ -15,9 +15,20 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            ZodiacSeeder::class,
+            ContactSeeder::class,
         ]);
+
+        // Create admin user only if doesn't exist
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'], // Check by email
+            [
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'), // Default password
+            ]
+        );
     }
 }

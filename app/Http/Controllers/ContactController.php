@@ -5,20 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Models\Zodiac;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 
 class ContactController extends Controller
 {
     /**
      * Display a paginated listing of contacts
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): Response
     {
         $query = Contact::with('zodiac');
 
         // Search functionality
-        if ($request->has('search')) {
-            $search = $request->get('search');
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('first_name', 'LIKE', "%{$search}%")
                   ->orWhere('last_name', 'LIKE', "%{$search}%")
@@ -26,18 +28,18 @@ class ContactController extends Controller
             });
         }
 
-        // Filter by tag
-        if ($request->has('tag')) {
-            $query->whereJsonContains('tags', $request->get('tag'));
+        // Filter by tag using your scope
+        if ($request->has('tag') && $request->tag) {
+            $query->byTag($request->tag);
         }
 
-        // Filter by zodiac
-        if ($request->has('zodiac')) {
-            $query->where('zodiac_id', $request->get('zodiac'));
+        // Filter by zodiac using your scope
+        if ($request->has('zodiac') && $request->zodiac) {
+            $query->byZodiac($request->zodiac);
         }
 
         // Filter favorites
-        if ($request->has('favorites') && $request->get('favorites') === 'true') {
+        if ($request->has('favorites') && $request->favorites === 'true') {
             $query->where('is_favorite', true);
         }
 
@@ -50,44 +52,43 @@ class ContactController extends Controller
         }
 
         // Pagination
-        $perPage = min($request->get('per_page', 15), 100); // Max 100 per page
-        $contacts = $query->paginate($perPage);
+        $contacts = $query->paginate(15)->withQueryString();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $contacts->items(),
-            'meta' => [
-                'current_page' => $contacts->currentPage(),
-                'last_page' => $contacts->lastPage(),
-                'per_page' => $contacts->perPage(),
-                'total' => $contacts->total(),
-                'from' => $contacts->firstItem(),
-                'to' => $contacts->lastItem(),
-            ],
-            'links' => [
-                'first' => $contacts->url(1),
-                'last' => $contacts->url($contacts->lastPage()),
-                'prev' => $contacts->previousPageUrl(),
-                'next' => $contacts->nextPageUrl(),
-            ]
+        // Get available tags and zodiacs for filters
+        $availableTags = Contact::whereNotNull('tags')
+            ->get()
+            ->pluck('tags')
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values();
+
+        $zodiacs = Zodiac::all(['id', 'name', 'symbol']);
+
+        return Inertia::render('contacts/Index', [
+            'contacts' => $contacts,
+            'filters' => $request->only(['search', 'tag', 'zodiac', 'favorites', 'sort_by', 'sort_order']),
+            'availableTags' => $availableTags,
+            'zodiacs' => $zodiacs,
         ]);
     }
 
     /**
-     * Display the specified contact
+     * Show the form for creating a new contact
      */
-    public function show(Contact $contact): JsonResponse
+    public function create(): Response
     {
-        return response()->json([
-            'status' => 'success',
-            'data' => $contact->load('zodiac')
+        $zodiacs = Zodiac::all(['id', 'name', 'symbol']);
+
+        return Inertia::render('Contacts/Create', [
+            'zodiacs' => $zodiacs,
         ]);
     }
 
     /**
      * Store a newly created contact
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
@@ -100,25 +101,48 @@ class ContactController extends Controller
             'social_links' => 'nullable|array',
             'tags' => 'nullable|array',
             'last_meet' => 'nullable|date',
+            'is_favorite' => 'boolean',
         ]);
 
-        $contact = Contact::create($validated);
+        Contact::create($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Contact created successfully',
-            'data' => $contact->load('zodiac')
-        ], 201);
+        return redirect()->route('contacts.index')
+            ->with('success', 'Contact created successfully!');
+    }
+
+    /**
+     * Display the specified contact
+     */
+    public function show(Contact $contact): Response
+    {
+        $contact->load('zodiac');
+
+        return Inertia::render('Contacts/Show', [
+            'contact' => $contact,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified contact
+     */
+    public function edit(Contact $contact): Response
+    {
+        $zodiacs = Zodiac::all(['id', 'name', 'symbol']);
+
+        return Inertia::render('Contacts/Edit', [
+            'contact' => $contact,
+            'zodiacs' => $zodiacs,
+        ]);
     }
 
     /**
      * Update the specified contact
      */
-    public function update(Request $request, Contact $contact): JsonResponse
+    public function update(Request $request, Contact $contact): RedirectResponse
     {
         $validated = $request->validate([
-            'first_name' => 'sometimes|required|string|max:255',
-            'last_name' => 'sometimes|required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'nullable|email|unique:contacts,email,' . $contact->id,
             'phone' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
@@ -127,59 +151,23 @@ class ContactController extends Controller
             'social_links' => 'nullable|array',
             'tags' => 'nullable|array',
             'last_meet' => 'nullable|date',
+            'is_favorite' => 'boolean',
         ]);
 
         $contact->update($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Contact updated successfully',
-            'data' => $contact->fresh(['zodiac'])
-        ]);
+        return redirect()->route('contacts.index')
+            ->with('success', 'Contact updated successfully!');
     }
 
     /**
      * Remove the specified contact
      */
-    public function destroy(Contact $contact): JsonResponse
+    public function destroy(Contact $contact): RedirectResponse
     {
         $contact->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Contact deleted successfully'
-        ]);
-    }
-
-    /**
-     * Get all zodiac signs for dropdowns
-     */
-    public function zodiacs(): JsonResponse
-    {
-        $zodiacs = Zodiac::all(['id', 'name', 'symbol', 'element']);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $zodiacs
-        ]);
-    }
-
-    /**
-     * Get contact statistics
-     */
-    public function stats(): JsonResponse
-    {
-        $stats = [
-            'total_contacts' => Contact::count(),
-            'favorites' => Contact::where('is_favorite', true)->count(),
-            'with_birth_date' => Contact::whereNotNull('birth_date')->count(),
-            'with_social_links' => Contact::whereNotNull('social_links')->count(),
-            'recent_contacts' => Contact::where('created_at', '>=', now()->subDays(30))->count(),
-        ];
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $stats
-        ]);
+        return redirect()->route('contacts.index')
+            ->with('success', 'Contact deleted successfully!');
     }
 }

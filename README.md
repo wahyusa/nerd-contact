@@ -2,14 +2,9 @@
 
 Contact farming for nerd 🤓
 
-Add and list people you meet or plan to meet and create your own strategy on how to approach### 10. Start Development Servers
+Add and list people you meet or plan to meet and create your own strategy on how to approach them uniquely based on their interest and zodiac.
 
-```bash
-# Start Laravel server (accessible in Codespace)
-php artisan serve --host=0.0.0.0 --port=8000
-```
-
-Your Laravel 12 application should now be running and accessible at the Codespace URL on port 8000!
+But remember to just enjoy your life.
 
 ### Troubleshooting
 
@@ -30,7 +25,6 @@ If you encounter issues:
    - Ensure both servers are running
    - Check that Codespace ports 8000 and 5173 are forwardediquely based on their interest and zodiac.
 
-But remember to just enjoy your life.
 
 ## Codespace Installation (New Instance)
 

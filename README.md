@@ -10,21 +10,22 @@ But remember to just enjoy your life.
 
 If you encounter issues:
 
-1. **URLs still pointing to localhost**: 
-   ```bash
-   php artisan config:clear
-   php artisan ziggy:generate
-   # Restart Laravel server
-   ```
+1. **URLs still pointing to localhost**:
+
+    ```bash
+    php artisan config:clear
+    php artisan ziggy:generate
+    # Restart Laravel server
+    ```
 
 2. **CORS errors between Laravel and Vite**:
-   - The `vite.config.ts` should auto-configure CORS
-   - Restart both Laravel and Vite servers
+
+    - The `vite.config.ts` should auto-configure CORS
+    - Restart both Laravel and Vite servers
 
 3. **WebSocket connection errors**:
-   - Ensure both servers are running
-   - Check that Codespace ports 8000 and 5173 are forwardediquely based on their interest and zodiac.
-
+    - Ensure both servers are running
+    - Check that Codespace ports 8000 and 5173 are forwardediquely based on their interest and zodiac.
 
 ## Codespace Installation (New Instance)
 
@@ -53,7 +54,7 @@ source ~/.bashrc
 php --version
 ```
 
-### 3. Install Composer
+### 4. Install Composer
 
 ```bash
 # Download and install Composer
@@ -67,14 +68,14 @@ sudo chmod +x /usr/local/bin/composer
 composer --version
 ```
 
-### 4. Install Laravel Dependencies
+### 5. Install Laravel Dependencies
 
 ```bash
 # Install PHP dependencies
 composer install
 ```
 
-### 5. Configure Environment
+### 6. Configure Environment
 
 ```bash
 # Copy environment file
@@ -113,7 +114,7 @@ VITE_DEV_SERVER_URL=https://vigilant-train-vp5j6544jxjfxqxg-5173.app.github.dev
 
 This ensures Laravel and Vite generate correct URLs for your Codespace environment.
 
-### 6. Setup Database
+### 7. Setup Database
 
 ```bash
 # Run database migrations
@@ -123,7 +124,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-### 7. Install Frontend Dependencies
+### 8. Install Frontend Dependencies
 
 ```bash
 # Install Node.js packages
@@ -133,7 +134,7 @@ npm install
 npm run build
 ```
 
-### 8. Configure Laravel for Codespace
+### 9. Configure Laravel for Codespace
 
 **Important**: Configure Laravel to work properly with Codespace's proxy system:
 
@@ -148,14 +149,14 @@ Add proxy trust configuration and URL forcing for Codespace environment. The pro
 - **URL Forcing**: `AppServiceProvider.php` forces correct HTTPS URLs when in Codespace
 - **Vite Configuration**: `vite.config.ts` auto-detects Codespace and configures CORS/HMR
 
-### 9. Generate Route Configuration
+### 10. Generate Route Configuration
 
 ```bash
 # Generate Ziggy routes for frontend
 php artisan ziggy:generate
 ```
 
-### 10. Start Development Servers
+### 11. Start Development Servers
 
 ```bash
 # Start Laravel server (accessible in Codespace)
@@ -185,6 +186,47 @@ php artisan migrate
 
 # Refresh database with fresh seed data
 php artisan migrate:fresh --seed
+```
+
+### Pre-Commit Hooks
+
+This project uses [Husky](https://typicode.github.io/husky/) to run pre-commit hooks that ensure code quality before each commit. The hooks mirror the same linting and testing commands used in GitHub Actions.
+
+**What runs before each commit:**
+
+1. **Lint-staged**: Runs formatting and linting only on staged files
+
+    - PHP files: `vendor/bin/pint` (Laravel Pint code formatter)
+    - Frontend files: `prettier --write` and `eslint --fix`
+
+2. **Build & Test**: Ensures the build passes and all tests are green
+    - `npm run build` (Vite production build)
+    - `./vendor/bin/pest --no-coverage` (PHPUnit tests via Pest)
+
+**Manual commands:**
+
+```bash
+# Run pre-commit hooks manually
+npm run pre-commit
+
+# Run only lint-staged (format/lint staged files)
+npx lint-staged
+
+# Run individual linting commands
+vendor/bin/pint                # Format PHP files
+npm run format                 # Format frontend files
+npm run lint                   # Lint frontend files
+
+# Bypass pre-commit hooks (use sparingly)
+git commit --no-verify -m "commit message"
+```
+
+**Setup (already configured):**
+
+The pre-commit hooks are automatically set up when you run `npm install` due to the `prepare` script in `package.json`. If you need to manually initialize:
+
+```bash
+npx husky init
 ```
 
 ### Development Workflow in Codespace
@@ -233,40 +275,40 @@ The following files are automatically configured for Codespace:
 
 ## Usage
 
-**Note**: Replace `your-codespace-8000.app.github.dev` with your actual Codespace URL.
+**Note**: Replace `localhost` with your actual Codespace URL.
 
 ### Basic
 
-https://your-codespace-8000.app.github.dev/api/contacts
-https://your-codespace-8000.app.github.dev/api/zodiacs
-https://your-codespace-8000.app.github.dev/api/contacts-stats
+https://localhost/api/contacts
+https://localhost/api/zodiacs
+https://localhost/api/contacts-stats
 
 ### Search
 
-https://your-codespace-8000.app.github.dev/api/contacts?search=john
-https://your-codespace-8000.app.github.dev/api/contacts?search=doe
-https://your-codespace-8000.app.github.dev/api/contacts?search=gmail
+https://localhost/api/contacts?search=john
+https://localhost/api/contacts?search=doe
+https://localhost/api/contacts?search=gmail
 
 ### Filter
 
-https://your-codespace-8000.app.github.dev/api/contacts?tag=nerd
-https://your-codespace-8000.app.github.dev/api/contacts?tag=friend
-https://your-codespace-8000.app.github.dev/api/contacts?zodiac=1
-https://your-codespace-8000.app.github.dev/api/contacts?favorites=true
+https://localhost/api/contacts?tag=nerd
+https://localhost/api/contacts?tag=friend
+https://localhost/api/contacts?zodiac=1
+https://localhost/api/contacts?favorites=true
 
 ### Pagination
 
-https://your-codespace-8000.app.github.dev/api/contacts?page=2
-https://your-codespace-8000.app.github.dev/api/contacts?per_page=5
-https://your-codespace-8000.app.github.dev/api/contacts?page=2&per_page=10
+https://localhost/api/contacts?page=2
+https://localhost/api/contacts?per_page=5
+https://localhost/api/contacts?page=2&per_page=10
 
 ### Sorting
 
-https://your-codespace-8000.app.github.dev/api/contacts?sort_by=last_name&sort_order=desc
-https://your-codespace-8000.app.github.dev/api/contacts?sort_by=created_at&sort_order=desc
-https://your-codespace-8000.app.github.dev/api/contacts?sort_by=email&sort_order=asc
+https://localhost/api/contacts?sort_by=last_name&sort_order=desc
+https://localhost/api/contacts?sort_by=created_at&sort_order=desc
+https://localhost/api/contacts?sort_by=email&sort_order=asc
 
 ### Combined
 
-https://your-codespace-8000.app.github.dev/api/contacts?search=john&tag=nerd&sort_by=first_name
-https://your-codespace-8000.app.github.dev/api/contacts?zodiac=1&per_page=5&sort_order=desc
+https://localhost/api/contacts?search=john&tag=nerd&sort_by=first_name
+https://localhost/api/contacts?zodiac=1&per_page=5&sort_order=desc

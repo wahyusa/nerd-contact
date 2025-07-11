@@ -12,22 +12,7 @@
     "PHP_ENABLE_XDEBUG": "true"
   },
   "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer/php.ini,target=/usr/local/etc/php/conf.d/xdebug.ini,type=bind"
+    "source=${localWorkspaceFolder}/.devcontainer/php.ini,target=/usr/local/etc/php/conf.d/99-xdebug.ini,type=bind"
   ],
-  "postCreateCommand": "chmod +x .devcontainer/scripts/*.sh && .devcontainer/scripts/00_setup_codespace.sh",
-  "forwardPorts": [8000, 5173, 9000],
-  "portsAttributes": {
-    "8000": {
-      "label": "Laravel App",
-      "onAutoForward": "notify"
-    },
-    "5173": {
-      "label": "Vite Dev Server",
-      "onAutoForward": "notify"
-    },
-    "9000": {
-      "label": "Xdebug",
-      "onAutoForward": "silent"
-    }
-  }
+  "postCreateCommand": "chmod +x .devcontainer/scripts/*.sh && .devcontainer/scripts/00_setup_codespace.sh"
 }

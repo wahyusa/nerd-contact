@@ -5,5 +5,11 @@
       "version": "latest"
     }
   },
+"containerEnv": {
+    "PHP_ENABLE_XDEBUG": "true"
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/.devcontainer/php.ini,target=/etc/php/8.4/cli/conf.d/99-xdebug.ini,type=bind"
+  ],
   "postCreateCommand": "chmod +x .devcontainer/scripts/*.sh && .devcontainer/scripts/00_setup_codespace.sh"
 }

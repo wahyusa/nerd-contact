@@ -5,13 +5,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 SCRIPTS=(
-  "01_install_php.sh"
-  "02_set_php_default.sh"
-  "03_install_composer.sh"
   "04_laravel_init.sh"
   "05_database_setup.sh"
   "06_frontend_setup.sh"
-  "07_laravel_codespace_config.sh"
   "99_start_dev_server.sh"
 )
 

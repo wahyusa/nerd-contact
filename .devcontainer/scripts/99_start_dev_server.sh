@@ -16,3 +16,9 @@ else
     echo "Starting Vite frontend..."
     npm run dev
 fi
+
+# Make Vite port public in Codespaces (if gh CLI is available)
+if command -v gh &> /dev/null && [ -n "$CODESPACES" ]; then
+    echo "Setting Codespace port 5173 to public..."
+    gh codespace ports visibility 5173:public -c "$CODESPACE_NAME" || true
+fi

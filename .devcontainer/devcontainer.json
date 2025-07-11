@@ -3,9 +3,12 @@
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
     }
   },
-"containerEnv": {
+  "containerEnv": {
     "PHP_ENABLE_XDEBUG": "true"
   },
   "mounts": [

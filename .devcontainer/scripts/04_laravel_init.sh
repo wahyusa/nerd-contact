@@ -6,19 +6,6 @@ if [ -z "$CODESPACES" ] && [ -z "$CODESPACE_NAME" ]; then
     exit 1
 fi
 
-# Fix Xdebug config to suppress step debug warnings
-XDEBUG_INI="/usr/local/etc/php/conf.d/xdebug.ini"
-if grep -q "xdebug.mode" "$XDEBUG_INI"; then
-    sed -i 's/^xdebug.mode=.*/xdebug.mode=develop,coverage/' "$XDEBUG_INI"
-else
-    echo "xdebug.mode=develop,coverage" >> "$XDEBUG_INI"
-fi
-if grep -q "xdebug.start_with_request" "$XDEBUG_INI"; then
-    sed -i 's/^xdebug.start_with_request=.*/xdebug.start_with_request=no/' "$XDEBUG_INI"
-else
-    echo "xdebug.start_with_request=no" >> "$XDEBUG_INI"
-fi
-
 echo "Installing composer dependencies..."
 
 composer install

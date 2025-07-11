@@ -2,14 +2,14 @@
 set -e
 
 SCRIPTS=(
-  "01-install-php.sh"
-  "02-set-php-default.sh"
-  "03-install-composer.sh"
-  "04-laravel-init.sh"
-  "05-database-setup.sh"
-  "06-frontend-setup.sh"
-  "07-laravel-codespace-config.sh"
-  "08-start-dev.sh"
+  "01_install_php.sh"
+  "02_set_php_default.sh"
+  "03_install_composer.sh"
+  "04_laravel_init.sh"
+  "05_database_setup.sh"
+  "06_frontend_setup.sh"
+  "07_laravel_codespace_config.sh"
+  "08_start_dev.sh"
 )
 
 for script in "${SCRIPTS[@]}"; do

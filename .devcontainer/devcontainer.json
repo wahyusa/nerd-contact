@@ -12,7 +12,7 @@
     "PHP_ENABLE_XDEBUG": "true"
   },
   "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer/php.ini,target=/etc/php/8.3/cli/conf.d/99-xdebug.ini,type=bind"
+    "source=${localWorkspaceFolder}/.devcontainer/php.ini,target=/usr/local/etc/php/conf.d/xdebug.ini,type=bind"
   ],
   "postCreateCommand": "chmod +x .devcontainer/scripts/*.sh && .devcontainer/scripts/00_setup_codespace.sh"
 }

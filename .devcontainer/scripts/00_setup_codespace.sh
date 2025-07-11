@@ -9,7 +9,7 @@ SCRIPTS=(
   "05_database_setup.sh"
   "06_frontend_setup.sh"
   "07_laravel_codespace_config.sh"
-  "08_start_dev.sh"
+  "99_start_dev_server.sh"
 )
 
 for script in "${SCRIPTS[@]}"; do

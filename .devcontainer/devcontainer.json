@@ -1,9 +1,9 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/php:8.3",
+  "image": "mcr.microsoft.com/devcontainers/php:8.4-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
-      "version": "20"
+      "version": "latest"
     }
   },
-  "postCreateCommand": "chmod +x .devcontainer/scripts/*.sh"
+  "postCreateCommand": "chmod +x .devcontainer/scripts/*.sh && ./00_setup_codespace.sh"
 }
